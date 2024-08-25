@@ -19,10 +19,12 @@ phases:
         echo "Found images: $IMAGES"
         for IMAGE in $IMAGES; do
           echo "Scanning $IMAGE"
-          trivy image --severity HIGH,CRITICAL $IMAGE | tee trivy_report.txt | grep -E 'High|Critical' | wc -l | xargs -I {} echo "Number of vulnerabilities in $IMAGE: {}"
-          # trivy image --exit-code 1 --severity HIGH,CRITICAL $IMAGE || exit 1
+          trivy image --severity HIGH,CRITICAL $IMAGE > "${IMAGE//:/_}_scan_report.txt" || true
+          echo "Scan results for $IMAGE:"
+          cat "${IMAGE//:/_}_scan_report.txt"
         done
 
 artifacts:
   files:
     - kubectl-deploy.yaml
+    - "*_scan_report.txt"
