@@ -19,9 +19,17 @@ phases:
         echo "Found images: $IMAGES"
         for IMAGE in $IMAGES; do
           echo "Scanning $IMAGE"
-          trivy image --severity HIGH,CRITICAL $IMAGE > "${IMAGE//:/_}_scan_report.txt" || true
+          REPORT_FILE="${IMAGE//:/_}_scan_report.txt"
+          trivy image --severity HIGH,CRITICAL $IMAGE > "$REPORT_FILE" 2>&1
+          if [ $? -ne 0 ]; then
+            echo "Trivy scan failed for $IMAGE. Check the report for details."
+          fi
           echo "Scan results for $IMAGE:"
-          cat "${IMAGE//:/_}_scan_report.txt"
+          if [ -f "$REPORT_FILE" ]; then
+            cat "$REPORT_FILE"
+          else
+            echo "Scan report file $REPORT_FILE not found."
+          fi
         done
 
 artifacts:
