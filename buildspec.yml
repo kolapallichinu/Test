@@ -27,15 +27,17 @@ phases:
           trivy image --severity HIGH,CRITICAL $IMAGE >> "$REPORT_FILE" 2>&1
           echo "#############################################################" >> "$REPORT_FILE"
           
-          # Extract and summarize vulnerability counts
+          
           TOTAL=$(grep -oP 'Total: \K\d+' "$REPORT_FILE" | tail -n 1)
           HIGH=$(grep -oP 'HIGH: \K\d+' "$REPORT_FILE" | tail -n 1)
           CRITICAL=$(grep -oP 'CRITICAL: \K\d+' "$REPORT_FILE" | tail -n 1)
           
           echo "$IMAGE:" >> "$TEMP_FILE"
           echo "No. of Vulnerabilities: Total($TOTAL), High($HIGH), Critical($CRITICAL)" >> "$TEMP_FILE"
-          echo "" >> "$TEMP_FILE"  # Add a blank line for separation
+          echo "" >> "$TEMP_FILE"  
         done
+
+        cat "$TEMP_FILE"
 
         cat "$TEMP_FILE" "$REPORT_FILE" > "${REPORT_FILE}.tmp"
         mv "${REPORT_FILE}.tmp" "$REPORT_FILE"
