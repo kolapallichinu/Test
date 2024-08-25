@@ -37,7 +37,8 @@ phases:
           echo "" >> "$TEMP_FILE"  # Add a blank line for separation
         done
 
-        cat "$TEMP_FILE" >> "$REPORT_FILE"
+        cat "$TEMP_FILE" "$REPORT_FILE" > "${REPORT_FILE}.tmp"
+        mv "${REPORT_FILE}.tmp" "$REPORT_FILE"
         rm "$TEMP_FILE"
 
 artifacts:
