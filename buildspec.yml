@@ -17,14 +17,28 @@ phases:
         IMAGES=$(grep "image:" kubectl-deploy.yaml | awk '{print $2}' | sort | uniq)
         echo "Found images: $IMAGES"
         REPORT_FILE="all_scan_reports.txt"
+        TEMP_FILE="temp_scan_report.txt"
         echo "Starting scan reports" > "$REPORT_FILE"  
+        echo "Scanned report:" > "$TEMP_FILE"
 
         for IMAGE in $IMAGES; do
           echo "Scanning $IMAGE"
           echo "Scanning $IMAGE" >> "$REPORT_FILE"  
           trivy image --severity HIGH,CRITICAL $IMAGE >> "$REPORT_FILE" 2>&1
           echo "#############################################################" >> "$REPORT_FILE"
+          
+          # Extract and summarize vulnerability counts
+          TOTAL=$(grep -oP 'Total: \K\d+' "$REPORT_FILE" | tail -n 1)
+          HIGH=$(grep -oP 'HIGH: \K\d+' "$REPORT_FILE" | tail -n 1)
+          CRITICAL=$(grep -oP 'CRITICAL: \K\d+' "$REPORT_FILE" | tail -n 1)
+          
+          echo "$IMAGE:" >> "$TEMP_FILE"
+          echo "No. of Vulnerabilities: Total($TOTAL), High($HIGH), Critical($CRITICAL)" >> "$TEMP_FILE"
+          echo "" >> "$TEMP_FILE"  # Add a blank line for separation
         done
+
+        cat "$TEMP_FILE" >> "$REPORT_FILE"
+        rm "$TEMP_FILE"
 
 artifacts:
   files:
