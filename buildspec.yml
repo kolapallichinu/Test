@@ -21,6 +21,7 @@ phases:
         echo "Found images: $IMAGES"
         for IMAGE in $IMAGES; do
           echo "Scanning $IMAGE"
+          trivy image --severity HIGH,CRITICAL $IMAGE | tee trivy_report.txt | grep -E 'High|Critical' | wc -l | xargs -I {} echo "Number of vulnerabilities in $IMAGE: {}"
           # trivy image --exit-code 1 --severity HIGH,CRITICAL $IMAGE || exit 1
         done
 
