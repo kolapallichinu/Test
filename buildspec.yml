@@ -8,7 +8,6 @@ phases:
       - tar zxvf trivy_0.25.2_Linux-64bit.tar.gz
       - mv trivy /usr/local/bin/
       - trivy --version
-
   build:
     commands:
       - echo "Listing files in the directory"
@@ -17,22 +16,17 @@ phases:
       - |
         IMAGES=$(grep "image:" kubectl-deploy.yaml | awk '{print $2}')
         echo "Found images: $IMAGES"
+        REPORT_FILE="all_scan_reports.txt"
+        echo "Starting scan reports" > "$REPORT_FILE"  
+
         for IMAGE in $IMAGES; do
           echo "Scanning $IMAGE"
-          REPORT_FILE="${IMAGE//:/_}_scan_report.txt"
-          trivy image --severity HIGH,CRITICAL $IMAGE > "$REPORT_FILE" 2>&1
-          if [ $? -ne 0 ]; then
-            echo "Trivy scan failed for $IMAGE. Check the report for details."
-          fi
-          echo "Scan results for $IMAGE:"
-          if [ -f "$REPORT_FILE" ]; then
-            cat "$REPORT_FILE"
-          else
-            echo "Scan report file $REPORT_FILE not found."
-          fi
+          echo "Scanning $IMAGE" >> "$REPORT_FILE"  
+          trivy image --severity HIGH,CRITICAL $IMAGE >> "$REPORT_FILE" 2>&1
+          echo "#############################################################" >> "$REPORT_FILE"
         done
 
 artifacts:
   files:
     - kubectl-deploy.yaml
-    - "*_scan_report.txt"
+    - all_scan_reports.txt
