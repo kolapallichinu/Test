@@ -14,7 +14,7 @@ phases:
       - ls -l
       - echo "Parsing kubectl-deploy.yaml to list images"
       - |
-        IMAGES=$(grep "image:" kubectl-deploy.yaml | awk '{print $2}')
+        IMAGES=$(grep "image:" kubectl-deploy.yaml | awk '{print $2}' | sort | uniq)
         echo "Found images: $IMAGES"
         REPORT_FILE="all_scan_reports.txt"
         echo "Starting scan reports" > "$REPORT_FILE"  
