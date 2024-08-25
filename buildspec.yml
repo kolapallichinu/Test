@@ -3,9 +3,10 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo "Installing Trivy"
-      - wget https://github.com/aquasecurity/trivy/releases/download/v0.25.2/trivy_0.25.2_Linux-64bit.deb
-      - dpkg -i trivy_0.25.2_Linux-64bit.deb
+      - echo "Installing Trivy using binary"
+      - wget https://github.com/aquasecurity/trivy/releases/download/v0.25.2/trivy_0.25.2_Linux-64bit.tar.gz
+      - tar zxvf trivy_0.25.2_Linux-64bit.tar.gz
+      - mv trivy /usr/local/bin/
 
   build:
     commands:
