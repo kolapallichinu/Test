@@ -13,8 +13,6 @@ phases:
     commands:
       - echo "Listing files in the directory"
       - ls -l
-      - echo "Reading kubectl-deploy.yaml"
-      - cat kubectl-deploy.yaml
       - echo "Parsing kubectl-deploy.yaml to list images"
       - |
         IMAGES=$(grep "image:" kubectl-deploy.yaml | awk '{print $2}')
