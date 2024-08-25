@@ -16,11 +16,12 @@ phases:
       - echo "Reading kubectl-deploy.yaml"
       - cat kubectl-deploy.yaml
       - echo "Parsing kubectl-deploy.yaml to list images"
-      - IMAGES=$(grep "image:" kubectl-deploy.yaml | awk '{print $2}')
-      - echo "Found images: $IMAGES"
-      - for IMAGE in $IMAGES; do
-          echo "Scanning $IMAGE";
-          trivy image --exit-code 1 --severity HIGH,CRITICAL $IMAGE || exit 1;
+      - |
+        IMAGES=$(grep "image:" kubectl-deploy.yaml | awk '{print $2}')
+        echo "Found images: $IMAGES"
+        for IMAGE in $IMAGES; do
+          echo "Scanning $IMAGE"
+          trivy image --exit-code 1 --severity HIGH,CRITICAL $IMAGE || exit 1
         done
 
 artifacts:
